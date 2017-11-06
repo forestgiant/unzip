@@ -29,7 +29,6 @@ func Unzip(src, dest string) ([]string, error) {
 		if err != nil {
 			return files, err
 		}
-		defer rc.Close()
 
 		path := filepath.Join(dest, f.Name)
 		files = append(files, path)
@@ -44,19 +43,26 @@ func Unzip(src, dest string) ([]string, error) {
 
 			err = os.MkdirAll(dir, os.ModePerm)
 			if err != nil {
+				rc.Close()
 				return files, err
 			}
 			f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 			if err != nil {
+				rc.Close()
 				return files, err
 			}
-			defer f.Close()
 
 			_, err = io.Copy(f, rc)
 			if err != nil {
+				rc.Close()
+				f.Close()
 				return files, err
 			}
+
+			f.Close()
 		}
+
+		rc.Close()
 	}
 	return files, nil
 }
