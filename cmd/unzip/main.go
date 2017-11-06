@@ -19,6 +19,7 @@ func main() {
 	dest := args[1]
 
 	// Try to download the src
+	fmt.Printf("Downloading: %s\n", args[0])
 	f, err := unzip.DownloadFile(src, "")
 	if err == nil {
 		// If there wasn't an error then the src was a url
@@ -26,6 +27,8 @@ func main() {
 		src = f
 		defer os.Remove(f)
 	}
+
+	fmt.Printf("Download Finished. Starting unzip.\n")
 
 	_, err = unzip.Unzip(src, dest)
 	if err != nil {
